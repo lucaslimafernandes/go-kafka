@@ -49,3 +49,15 @@ func minMaxId() MinMaxId {
 	return mmData
 
 }
+
+func GeneratorData() (Person, error) {
+
+	data := Person{}
+	err := faker.FakeData(&data)
+	if err != nil {
+		return Person{}, err
+	}
+
+	return data, nil
+
+}

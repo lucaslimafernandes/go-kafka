@@ -24,7 +24,6 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatalln("Failed to connect to the database: ", err)
 	}
-
 }
 
 func ConnectKafkaConsumer() {
@@ -58,7 +57,7 @@ func ConnectMongoDB() {
 
 	var err error
 
-	uri := "mongodb://localhost:27017"
+	uri := "mongodb://mongoadmin:secret@localhost:27017/"
 	clientOptions := options.Client().ApplyURI(uri)
 
 	Mongo, err = mongo.Connect(context.Background(), clientOptions)
