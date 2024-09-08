@@ -38,11 +38,11 @@ func main() {
 	fmt.Println("Terminou")
 	fmt.Println("Consuming!")
 
-	cons()
+	consumer()
 
 }
 
-func cons() {
+func consumer() {
 
 	for {
 		msg, err := models.CM.ReadMessage(-1) // Lê mensagem (timeout infinito)

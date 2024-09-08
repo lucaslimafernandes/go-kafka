@@ -3,6 +3,7 @@ package payutils
 import (
 	"context"
 	"log"
+	"math/rand"
 	"sync"
 
 	"github.com/lucaslimafernandes/go-kafka/models"
@@ -27,15 +28,19 @@ func onePerson(n int) {
 		go func() {
 
 			user, _ := models.GeneratorData()
+			min := 1000.00
+			max := 20000.00
+			balance := min + rand.Float64()*(max-min)
 
 			insertQuery := `
-				INSERT INTO users (name, credit_card, address, city, state, postal_code, coordinates_lat, coordinates_long)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+				INSERT INTO users (name, credit_card, balance, address, city, state, postal_code, coordinates_lat, coordinates_long)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, &9); 
 			`
 			err := models.DB.QueryRow(context.Background(),
 				insertQuery,
 				user.Name,
 				user.CreditCard,
+				balance,
 				user.Address.Address,
 				user.Address.City,
 				user.Address.State,
