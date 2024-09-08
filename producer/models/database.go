@@ -2,14 +2,18 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var DB *pgxpool.Pool
 var PD *kafka.Producer
+var Mongo *mongo.Client
 
 func ConnectDB() {
 
@@ -47,5 +51,26 @@ func ConnectKafkaConsumer() {
 		}
 
 	}()
+
+}
+
+func ConnectMongoDB() {
+
+	var err error
+
+	uri := "mongodb://localhost:27017"
+	clientOptions := options.Client().ApplyURI(uri)
+
+	Mongo, err = mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Fatalln("Failed to connect MongoDB: ", err)
+	}
+
+	err = Mongo.Ping(context.Background(), nil)
+	if err != nil {
+		log.Fatalf("Failed to ping MongoDB: %v", err)
+	}
+
+	fmt.Println("MongoDB connection established successfully!")
 
 }
