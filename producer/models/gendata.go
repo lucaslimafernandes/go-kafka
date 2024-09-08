@@ -2,51 +2,60 @@ package models
 
 import (
 	"context"
+	"log"
 	"math/rand"
 
 	"github.com/go-faker/faker/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Selling() (Sell, error) {
+func Selling() Sell {
 
-	mm := minMaxId()
-	idUser := selectId(mm)
+	// mm := minMaxId()
+	user := selectMongo()
 
 	min := 1.0
 	max := 1500.0
 	sell := Sell{
-		PersonId: idUser,
-		Amount:   min + rand.Float64()*(max-min),
-		Address:  faker.GetRealAddress(),
+		Person:  user,
+		Amount:  min + rand.Float64()*(max-min),
+		Address: faker.GetRealAddress(),
 	}
 
-	return sell, nil
+	return sell
 
 }
 
-func selectId(m MinMaxId) int {
+func selectMongo() PersonBson {
 
-	return rand.Intn(m.Max-m.Min) + m.Min
+	collection := Mongo.Database("public").Collection("users")
 
-}
+	// pipeline := mongo.Pipeline{
+	// 	{{"$sample", bson.D{{"size", 1}}}},
+	// }
 
-func minMaxId() MinMaxId {
+	pipeline := mongo.Pipeline{
+		{
+			{Key: "$sample", Value: bson.D{{Key: "size", Value: 1}}},
+		},
+	}
 
-	var mmData MinMaxId
+	cursor, err := collection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	mmQuery := `
-		select 
-			min(u.id) ,
-			max(u.id)
-		from users u 
-		;
-	`
-	DB.QueryRow(context.Background(), mmQuery).Scan(
-		&mmData.Min,
-		&mmData.Max,
-	)
+	defer cursor.Close(context.Background())
 
-	return mmData
+	var randomUser PersonBson
+	if cursor.Next(context.Background()) {
+		if err := cursor.Decode(&randomUser); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return randomUser
 
 }
 

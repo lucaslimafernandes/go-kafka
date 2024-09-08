@@ -1,6 +1,12 @@
 package main
 
-import "github.com/lucaslimafernandes/go-kafka-prd/models"
+import (
+	"flag"
+	"fmt"
+
+	"github.com/lucaslimafernandes/go-kafka-prd/controllers"
+	"github.com/lucaslimafernandes/go-kafka-prd/models"
+)
 
 // import (
 // 	"flag"
@@ -10,35 +16,33 @@ import "github.com/lucaslimafernandes/go-kafka-prd/models"
 
 func init() {
 
-	models.ConnectDB()
-
-	models.ConnectKafkaConsumer()
-	// models.ConnectKafkaConsumerResp()
+	models.ConnectMongoDB()
+	models.ConnectKafkaProducer()
 
 }
 
-// func main() {
+func main() {
 
-// 	newUsersFlag := flag.Bool("new_users", false, "new users")
-// 	runFlag := flag.Bool("run", false, "run")
+	newUsersFlag := flag.Bool("new_users", false, "new users")
+	runFlag := flag.Bool("run", false, "run")
 
-// 	flag.Parse()
+	flag.Parse()
 
-// 	if *newUsersFlag {
-// 		payutils.Inserts(1000, 1000)
-// 	}
+	if *newUsersFlag {
+		models.GenNewUsers()
+	}
 
-// 	if *runFlag {
-// 		fmt.Println("Vai executar")
-// 		go payutils.PassingCards()
-// 	}
+	if *runFlag {
+		fmt.Println("Vai executar")
+		controllers.PassingCards()
+	}
 
-// 	fmt.Println("Terminou")
-// 	fmt.Println("Consuming!")
+	// 	fmt.Println("Terminou")
+	// 	fmt.Println("Consuming!")
 
-// 	consumer()
+	// 	consumer()
 
-// }
+}
 
 // func consumer() {
 

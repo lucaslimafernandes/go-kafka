@@ -26,7 +26,7 @@ func ConnectDB() {
 	}
 }
 
-func ConnectKafkaConsumer() {
+func ConnectKafkaProducer() {
 
 	var err error
 

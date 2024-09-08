@@ -28,10 +28,7 @@ func inputData() {
 
 		wg.Add(2)
 
-		genSell, err := models.Selling()
-		if err != nil {
-			return
-		}
+		genSell := models.Selling()
 		go func(genSell models.Sell) {
 
 			jsonSell, err := json.Marshal(genSell)
