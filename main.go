@@ -15,6 +15,7 @@ func init() {
 
 	models.ConnectKafkaProducer()
 	models.ConnectKafkaConsumer()
+	models.ConnectKafkaConsumerResp()
 
 }
 
@@ -31,7 +32,7 @@ func main() {
 
 	if *runFlag {
 		fmt.Println("Vai executar")
-		payutils.PassingCards()
+		go payutils.PassingCards()
 	}
 
 	fmt.Println("Terminou")

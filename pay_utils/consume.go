@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/lucaslimafernandes/go-kafka/models"
 )
 
@@ -12,9 +13,9 @@ func Validat(msg string) {
 
 	var sell models.Sell
 	var sellLog models.SellLog
-	userAcc := models.GetUser(1)
-
 	json.Unmarshal([]byte(msg), &sell)
+
+	userAcc := models.GetUser(sell.PersonId)
 
 	if userAcc.Balance >= sell.Amount {
 		sellLog = models.SellLog{
@@ -34,11 +35,12 @@ func Validat(msg string) {
 		}
 	}
 
-	insertLog(sellLog)
+	insertLog(sellLog, userAcc.Balance-sell.Amount)
+	response(sell, sellLog.IsValid)
 
 }
 
-func insertLog(s models.SellLog) {
+func insertLog(s models.SellLog, new_balance float64) {
 
 	insertQuery := `
 		INSERT INTO logs (user_id, amount, city, state, is_valid)
@@ -54,10 +56,52 @@ func insertLog(s models.SellLog) {
 		s.IsValid,
 	).Scan()
 	if err != nil && err.Error() != "no rows in result set" {
-		log.Printf("Failed to insert new user: %v\n", err)
+		log.Printf("Failed to insert new purchase: %v\n", err)
 	}
+
+	if new_balance >= 0.0 {
+		updateQuery := `
+			UPDATE users 
+			SET balance = $1
+			WHERE id = $2;
+		`
+
+		_, err = models.DB.Exec(context.Background(),
+			updateQuery,
+			new_balance,
+			s.User_id,
+		)
+		if err != nil {
+			log.Fatalf("Failed to update balance to user: %s\n", err)
+		}
+	}
+
 }
 
-func haveBalance() {
+func response(s models.Sell, valid bool) {
+
+	res := models.ResponseSell{
+		PersonId: s.PersonId,
+		Amount:   s.Amount,
+		Address:  s.Address,
+		IsValid:  valid,
+	}
+
+	topic := "Response"
+	jsonRes, err := json.Marshal(res)
+	if err != nil {
+		log.Fatalf("Failed response: %v\n", err)
+	}
+
+	err = models.PD.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic: &topic, Partition: kafka.PartitionAny,
+		},
+		Value: jsonRes,
+	}, nil)
+	if err != nil {
+		log.Printf("Failed to produce message: %v\n", err)
+		return
+	}
 
 }

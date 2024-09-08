@@ -16,8 +16,8 @@ type MinMaxId struct {
 
 type Sell struct {
 	PersonId int
-	Amount   float64           `faker:"amount"`
-	Address  faker.RealAddress `faker:"real_address"`
+	Amount   float64
+	Address  faker.RealAddress
 }
 
 type SellValidation struct {
@@ -31,6 +31,13 @@ type SellLog struct {
 	City    string
 	State   string
 	IsValid bool
+}
+
+type ResponseSell struct {
+	PersonId int
+	Amount   float64
+	Address  faker.RealAddress
+	IsValid  bool
 }
 
 func GeneratorData() (Person, error) {

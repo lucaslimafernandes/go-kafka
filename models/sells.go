@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 
 	"github.com/go-faker/faker/v4"
@@ -13,14 +12,12 @@ func Selling() (Sell, error) {
 	mm := minMaxId()
 	idUser := selectId(mm)
 
+	min := 1.0
+	max := 1500.0
 	sell := Sell{
 		PersonId: idUser,
-	}
-
-	err := faker.FakeData(&sell)
-	if err != nil {
-		fmt.Println(err)
-		return Sell{}, nil
+		Amount:   min + rand.Float64()*(max-min),
+		Address:  faker.GetRealAddress(),
 	}
 
 	return sell, nil
@@ -44,6 +41,7 @@ func GetUser(u int) SellValidation {
 		&dataSell.PersonId,
 		&dataSell.Balance,
 	)
+	// log.Print("\n\n\n", dataSell, "\n\n\n")
 
 	return dataSell
 
