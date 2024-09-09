@@ -4,16 +4,26 @@ import (
 	"encoding/json"
 	"log"
 	"math/rand"
+	"os"
 	"sync"
+	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/lucaslimafernandes/go-kafka-prd/models"
 )
 
-func PassingCards() {
+func PassingCards(t time.Duration) {
+
+	timeout := time.After(t * time.Minute)
 
 	for {
-		inputData()
+		select {
+		case <-timeout:
+			log.Println("Timeout reached. Terminating execution.")
+			os.Exit(0)
+		default:
+			inputData()
+		}
 	}
 
 }
@@ -26,7 +36,7 @@ func inputData() {
 
 	for i := 0; i <= sells; i++ {
 
-		wg.Add(2)
+		wg.Add(1)
 
 		genSell := models.Selling()
 		go func(genSell models.Sell) {

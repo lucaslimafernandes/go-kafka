@@ -25,6 +25,7 @@ func main() {
 
 	newUsersFlag := flag.Bool("new_users", false, "new users")
 	runFlag := flag.Bool("run", false, "run")
+	timeRunning := flag.Duration("timer", 1, "Time running")
 
 	flag.Parse()
 
@@ -34,7 +35,7 @@ func main() {
 
 	if *runFlag {
 		fmt.Println("Vai executar")
-		controllers.PassingCards()
+		controllers.PassingCards(*timeRunning)
 	}
 
 	// 	fmt.Println("Terminou")
