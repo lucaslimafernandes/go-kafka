@@ -25,7 +25,7 @@ func main() {
 
 	newUsersFlag := flag.Bool("new_users", false, "new users")
 	runFlag := flag.Bool("run", false, "run")
-	timeRunning := flag.Duration("timer", 1, "Time running")
+	timeRunning := flag.Duration("timer", 1, "Time running (min)")
 
 	flag.Parse()
 
