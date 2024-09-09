@@ -3,9 +3,9 @@ package models
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Sell struct {
-	PersonId string
-	Amount   float64
-	Address  RealAddress
+	Person  PersonBson
+	Amount  float64
+	Address RealAddress
 }
 
 type RealAddress struct {
@@ -22,7 +22,7 @@ type SellValidation struct {
 }
 
 type SellLog struct {
-	User_id string
+	User_id primitive.ObjectID `bson:"_id,omitempty"`
 	Amount  float64
 	City    string
 	State   string
@@ -30,19 +30,18 @@ type SellLog struct {
 }
 
 type PersonBson struct {
-	ID primitive.ObjectID `bson:"_id,omitempty"` // ID do MongoDB
-	// ID          string      `bson:"_id,omitempty"` // ID do MongoDB
-	Name        string      `bson:"name"`        // Nome do usuário
-	CreditCard  string      `bson:"credit_card"` // Número do cartão de crédito
-	Balance     float64     `bson:"balance"`     // Saldo
-	Address     string      `bson:"address"`     // Endereço
-	City        string      `bson:"city"`        // Cidade
-	State       string      `bson:"state"`       // Estado
-	PostalCode  string      `bson:"postal_code"` // CEP
-	Coordinates Coordinates `bson:"coordinates"` // Coordenadas (latitude e longitude)
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Name        string             `bson:"name"`
+	CreditCard  string             `bson:"credit_card"`
+	Balance     float64            `bson:"balance"`
+	Address     string             `bson:"address"`
+	City        string             `bson:"city"`
+	State       string             `bson:"state"`
+	PostalCode  string             `bson:"postal_code"`
+	Coordinates Coordinates        `bson:"coordinates"`
 }
 
 type Coordinates struct {
-	Lat  float64 `bson:"lat"`  // Latitude
-	Long float64 `bson:"long"` // Longitude
+	Lat  float64 `bson:"lat"`
+	Long float64 `bson:"long"`
 }

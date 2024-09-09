@@ -10,7 +10,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func Validate(msg string) {
@@ -19,57 +18,38 @@ func Validate(msg string) {
 	var sellLog models.SellLog
 	json.Unmarshal([]byte(msg), &sell)
 
-	userAcc := getUser(sell.PersonId)
+	fmt.Printf("\n\nUser Balance: %f, Sell Amount: %f\n\n", sell.Person.Balance, sell.Amount)
 
-	fmt.Println(sell)
-	fmt.Println(userAcc)
+	if sell.Person.Balance > 0 {
+		fmt.Println(sell.Person.Balance, sell.Amount)
 
-	if userAcc.Balance >= sell.Amount {
-		sellLog = models.SellLog{
-			User_id: sell.PersonId,
-			Amount:  sell.Amount,
-			City:    sell.Address.City,
-			State:   sell.Address.State,
-			IsValid: true,
-		}
-	} else {
-		sellLog = models.SellLog{
-			User_id: sell.PersonId,
-			Amount:  sell.Amount,
-			City:    sell.Address.City,
-			State:   sell.Address.State,
-			IsValid: false,
-		}
-	}
-
-	insertLog(sellLog, userAcc.Balance-sell.Amount)
-
-}
-
-func getUser(s string) models.PersonBson {
-
-	collection := models.Mongo.Database("testdb").Collection("users")
-
-	objectID, err := primitive.ObjectIDFromHex(s)
-	if err != nil {
-		log.Printf("Invalid ID: %v", err)
-	}
-
-	var result models.PersonBson
-	err = collection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			fmt.Println("No document found with the provided _id")
+		if sell.Person.Balance >= sell.Amount {
+			sellLog = models.SellLog{
+				User_id: sell.Person.ID,
+				Amount:  sell.Amount,
+				City:    sell.Address.City,
+				State:   sell.Address.State,
+				IsValid: true,
+			}
 		} else {
-			log.Fatal(err)
+			sellLog = models.SellLog{
+				User_id: sell.Person.ID,
+				Amount:  sell.Amount,
+				City:    sell.Address.City,
+				State:   sell.Address.State,
+				IsValid: false,
+			}
 		}
-	}
 
-	return result
+		insertLog(sellLog)
+		updateBalance(sellLog.User_id, sell.Person.Balance-sell.Amount)
+	} else {
+		return
+	}
 
 }
 
-func insertLog(s models.SellLog, newBalance float64) {
+func insertLog(s models.SellLog) {
 
 	collection := models.Mongo.Database("public").Collection("transactions")
 
@@ -86,14 +66,19 @@ func insertLog(s models.SellLog, newBalance float64) {
 		log.Printf("Failed to insert new user: %s\n", err)
 	}
 
+}
+
+func updateBalance(objID primitive.ObjectID, newBalance float64) {
+
+	collection := models.Mongo.Database("public").Collection("users")
+
 	update := bson.M{
 		"$set": bson.M{
 			"balance": newBalance,
 		},
 	}
 
-	objectID, _ := primitive.ObjectIDFromHex(s.User_id)
-	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": objectID}, update)
+	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": objID}, update)
 	if err != nil {
 		log.Fatalf("Error updating user balance: %v", err)
 	}

@@ -37,12 +37,11 @@ func consumer(d time.Duration) {
 			log.Println("Timeout reached. Terminating execution.")
 			os.Exit(0)
 		default:
-			msg, err := models.CM.ReadMessage(-1) // Lê mensagem (timeout infinito)
+			msg, err := models.CM.ReadMessage(-1) // timeout infinito
 			if err == nil {
 				fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
 				controllers.Validate(string(msg.Value))
 			} else {
-				// Acontece se houver um erro ao ler a mensagem
 				fmt.Printf("Consumer error: %v (%v)\n", err, msg)
 			}
 		}

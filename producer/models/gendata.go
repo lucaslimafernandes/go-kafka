@@ -12,7 +12,6 @@ import (
 
 func Selling() Sell {
 
-	// mm := minMaxId()
 	user := selectMongo()
 
 	min := 1.0
@@ -30,10 +29,6 @@ func Selling() Sell {
 func selectMongo() PersonBson {
 
 	collection := Mongo.Database("public").Collection("users")
-
-	// pipeline := mongo.Pipeline{
-	// 	{{"$sample", bson.D{{"size", 1}}}},
-	// }
 
 	pipeline := mongo.Pipeline{
 		{

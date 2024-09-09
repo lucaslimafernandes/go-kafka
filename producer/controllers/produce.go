@@ -32,7 +32,7 @@ func inputData() {
 
 	var wg sync.WaitGroup
 	topic := "Sells"
-	sells := rand.Intn(1000)
+	sells := rand.Intn(10)
 
 	for i := 0; i <= sells; i++ {
 
@@ -61,11 +61,6 @@ func inputData() {
 			wg.Done()
 
 		}(genSell)
-
-		// go func(genSell models.Sell) {
-		// 	defer wg.Done()
-		// 	getResponse(genSell)
-		// }(genSell)
 
 	}
 

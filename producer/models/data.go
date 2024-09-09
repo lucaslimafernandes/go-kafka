@@ -24,18 +24,18 @@ type MinMaxId struct {
 }
 
 type PersonBson struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"` // ID do MongoDB
-	Name        string             `bson:"name"`          // Nome do usuário
-	CreditCard  string             `bson:"credit_card"`   // Número do cartão de crédito
-	Balance     float64            `bson:"balance"`       // Saldo
-	Address     string             `bson:"address"`       // Endereço
-	City        string             `bson:"city"`          // Cidade
-	State       string             `bson:"state"`         // Estado
-	PostalCode  string             `bson:"postal_code"`   // CEP
-	Coordinates Coordinates        `bson:"coordinates"`   // Coordenadas (latitude e longitude)
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Name        string             `bson:"name"`
+	CreditCard  string             `bson:"credit_card"`
+	Balance     float64            `bson:"balance"`
+	Address     string             `bson:"address"`
+	City        string             `bson:"city"`
+	State       string             `bson:"state"`
+	PostalCode  string             `bson:"postal_code"`
+	Coordinates Coordinates        `bson:"coordinates"`
 }
 
 type Coordinates struct {
-	Lat  float64 `bson:"lat"`  // Latitude
-	Long float64 `bson:"long"` // Longitude
+	Lat  float64 `bson:"lat"`
+	Long float64 `bson:"long"`
 }
